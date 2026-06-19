@@ -1,0 +1,59 @@
+name: Irade
+
+on:
+    workflow_dispatch:   # Cria o botão para você rodar quando quiser
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Puxa os códigos do repositório principal
+      - name: Baixar Código Fonte do App
+        uses: actions/checkout@v4
+        with:
+          repository: 'victor3154k-web/Astra-NovaCore-AndroidApp'
+
+      # 2. Configura o Java para o Kotlin
+      - name: Configurar o Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Prepara o instalador do Gradle
+      - name: Configurar o Gradle temporário
+        uses: gradle/actions/setup-gradle@v4
+
+      # 4. Cria o arquivo gradlew na hora
+      - name: Criar o arquivo gradlew executável
+        run: gradle wrapper
+
+      # 5. Garante a permissão para rodar a compilação
+      - name: Mudar permissão do gradlew
+        run: chmod +x gradlew
+        
+    # 6g. Cria a debug.keystore caso o projeto exija assinatura debug
+      - name: Criar Debug Keystore
+        run: |
+          keytool -genkeypair \
+            -v \
+            -keystore debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=BR"
+
+      # 6. Compila o APK do seu app
+      - name: Compilar o APK
+        run: ./gradlew assembleDebug
+
+      # 7. Guarda o APK gerado na sua biblioteca
+      - name: Salvar APK na Biblioteca
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-novacore-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
