@@ -1,0 +1,6 @@
+{
+  "name": "Anotador PDF",
+  "description": "Um aplicativo completo para carregar, visualizar e fazer anotações de desenho e texto em documentos PDF.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
